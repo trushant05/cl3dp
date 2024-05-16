@@ -365,7 +365,7 @@ class Aerotech(Staging):
 
     def set_pressure(self, pressure = None):
         """
-        Method to set pressure of the system.
+        Method to set pressure of the UofM system.
 
         Parameters:
             pressure  (float)    :    Using the process model intended pressure is
@@ -388,7 +388,7 @@ class Aerotech(Staging):
 
     def set_pressure_regulator(self, pressure = None):
         """
-        Method to set pressure of the system.
+        Method to set pressure of the Collaboration Company's system.
 
         Parameters:
             pressure  (float)    :    Using the process model intended pressure is
@@ -411,7 +411,7 @@ class Aerotech(Staging):
 
     def set_pressure_solenoid(self, pressure = None):
         """
-        Method to set pressure of the system.
+        Method to set pressure of the Collaboration Company's system.
 
         Parameters:
             pressure  (float)    :    Using the process model intended pressure is

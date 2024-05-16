@@ -140,6 +140,7 @@ class Printer:
         """
         return self.controller.process_model(line_width, prev_speed)
 
+
     def save_controller_properties(self, data, filename):
         """
         Method to save controller parameters
@@ -177,6 +178,7 @@ class Printer:
         else:
             self.staging.set_pressure(voltage)
             self.curretn_pressure = pressure
+
 
     def linear_print(self, axis, distance, speed):
         
@@ -228,6 +230,7 @@ class Printer:
             raise Exception("Trying to move via a nonexistent axis")
         self.current_location = [self.staging.x, self.staging.y, self.staging.z]
 
+
     def grab_image_pylon(self):
         camera_controller = CameraController("measurement_camera")
         camera_controller.configure_for_software_trigger()
@@ -239,7 +242,8 @@ class Printer:
         camera_controller.close()
 
         return image
-    
+
+
     def grab_image_flir(self):
         """
         Method to capture image from Flir Blackfly camera.
@@ -248,7 +252,8 @@ class Printer:
         camera.run_camera()
         image = camera.grab_image()
         return image
- 
+
+
     def estimate_line_width(self, image, cnt, data_path):
         """
         Method to calculate average line width using camera
@@ -293,6 +298,7 @@ class Printer:
 
         return line_width
 
+
     def linear_estimator(self, axis, distance, speed, cnt):
         """
         Method that takes three iterations over entire line
@@ -326,7 +332,7 @@ class Printer:
             else:
                 raise Exception("Trying to move via a nonexistent axis")
 
-            captured_img = self.grab_image_flir()
+            captured_img = self.grab_image_pylon()
 
             line_widths.append(self.estimate_line_width(captured_img, cnt, data_path))
             cnt+=1
@@ -337,6 +343,7 @@ class Printer:
         self.current_location = [self.staging.x, self.staging.y, self.staging.z]
 
         return self.estimated_line_width
+
 
     def move_to_location(self, location):
         """
@@ -359,6 +366,7 @@ class Printer:
         self.linear(self.zaxis, location[2] - current_z, self.zspeed)
         #self.linear(self.zaxis, (location[2] - current_z) / 3, self.zspeed_slow)
 
+
     def move_to_camera(self):
         """
         Method to move to camera based on the camera offset.
@@ -377,6 +385,7 @@ class Printer:
         current_z = self.current_location[2]
         #self.linear(self.zaxis, 2 * (self.camera_offset[2] - current_z) / 3, self.zspeed)
         self.linear(self.zaxis, self.camera_offset[2] - current_z, self.zspeed)
+
 
     def move_to_nozzle(self):
         """
