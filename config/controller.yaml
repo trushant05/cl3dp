@@ -1,0 +1,9 @@
+# Controller Configuration File
+# This YAML file consists configuration for controller.
+
+# Controller Configuration
+params:
+  gain: 201.22
+  bias: 22.705
+  C: 1
+  ref_line_width: 280

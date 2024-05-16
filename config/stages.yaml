@@ -1,0 +1,42 @@
+# Stages Configuration File
+# This YAML file consists configuration for stages primarily for communication.
+
+# Communication Configuration
+connection:
+  # IP address of the host computer connected to stages.
+  # Use ipconfig/all in command prompt to get IP address of the computer.
+  PC_IP_ADDRESS: "141.212.84.36"
+  
+  # Port of the host computer -> stages connection.
+  # Default is 8000. If this does not work review following instruction
+  # to fetch updated one from A3200 Configuration Manager.
+  #
+  # 1. Open A3200 Configuration Manager.
+  # 2. From the drop-down of your active configuration file (System -> Communication -> ASCII).
+  # 3. Value of CommandPort is your port number.
+  PORT: 8000
+
+  # Socket Timeout is the duration after which the connection breaks with the stages due to inactivity.
+  # Default is 600 seconds (10 minutes).
+  # If the process flow required more time increase this.
+  SOCKET_TIMEOUT: 600
+
+# Stage Mode
+mode:
+  incremental: True
+
+# Substrate Thickness Configuration
+substrate:
+  GLASS: 0
+  SILICON: 1
+
+# Safety Zone Configuration (Nozzle + Stages)
+safety:
+  SAFE_ZONE_NOZZLE_X = [0, 175]
+  SAFE_ZONE_NOZZLE_Y = [0, 100]
+  SAFE_ZONE_NOZZLE_Z = [2.85, 3.45, 5]
+  SAFE_ZONE_AFM_X = [0, 25]
+  SAFE_ZONE_AFM_Y = [-15, 200]
+  SAFE_ZONE_AFM_Z = [3.9, 4.5, 5]
+
+  

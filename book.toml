@@ -2,8 +2,8 @@
 authors = ["Trushant-Adeshara-UM"]
 language = "en"
 multilingual = false
-src = "src"
-title = "hardware_template"
+src = "docs"
+title = "Southern Research"
 
 [rust]
 edition = "2021"

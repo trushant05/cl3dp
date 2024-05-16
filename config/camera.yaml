@@ -1,0 +1,8 @@
+# Camera Configuration File
+# This YAML file consists configuration for camera.
+
+# Camera Configuration
+params:
+    px_mm: 3.44
+    width: 2048
+    height: 1536

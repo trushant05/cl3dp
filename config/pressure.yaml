@@ -1,0 +1,7 @@
+# Pressure Configuration File
+# This YAML file consists configuration for Pressure (PSI -> Volatage)
+
+# Pressure Configuration
+params:
+  gain: 0.1
+  bias: 0
