@@ -5,8 +5,6 @@
 - [Installation](./install.md)
     - [A3200](./software/a3200.md)
     - [Camera](./software/camera.md)
-        - [PylonSDK](./software/camera/pylon.md)
-        - [Blackfly](./software/camera/blackfly.md)
     - [Miniconda](./software/conda.md)
     - [Git Bash](./software/gitbash.md)
     - [Source Code Setup](./software/srcode.md)

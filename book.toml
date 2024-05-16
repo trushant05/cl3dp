@@ -3,14 +3,13 @@ authors = ["Trushant-Adeshara-UM"]
 language = "en"
 multilingual = false
 src = "docs"
-title = "Southern Research"
+title = "CL3DP - Closing the Loop in 3D Printing"
 
 [rust]
 edition = "2021"
 
 [output.html]
-git-repository-url = "https://github.com/MassRobotics-FnF-Challenge/hardware_template/tree/main"
-edit-url-template = "https://github.com/MassRobotics-FnF-Challenge/hardware_template/edit/main/{path}"
+git-repository-url = "https://github.com/Trushant-Adeshara-UM/cl3dp/tree/main"
 
 [output.html.search]
 limit-results = 20
