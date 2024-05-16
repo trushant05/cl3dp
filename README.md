@@ -21,7 +21,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/MassRobotics-FnF-Challenge/repo_template">
+  <a href="https://github.com/Trushant-Adeshara-UM/cl3dp">
     <img src="images/logo.png" alt="Logo" width="200" height="120">
   </a>
 
