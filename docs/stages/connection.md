@@ -8,7 +8,7 @@ ipconfig
 
 ![](../assets/ip_fetch.png)
 
-From the output use Ethernet adapter's IPv4 Address.
+From the output use Ethernet adapter's IPv4 Address. Incase you are using WiFi adapter, use that IPv4 instead.
 
 ### 2. Get Port for ASCII server:
 Open A3200 Configuration Manager and in the left pane go to following parameter:

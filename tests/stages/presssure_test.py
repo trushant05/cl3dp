@@ -35,14 +35,15 @@ parser = argparse.ArgumentParser(description="Pressure value parser")
 
 # Add required flag for pressure
 parser.add_argument('--pressure', type=int, required=False, help='Pressure as integer value (PSI)')
-parser.add_argument('--enable', type=int, required=True, help='Enable 1 Disable 0')
 
 # Parse the arguments
 args = parser.parse_args()
 
+# Create instance of class Aerotech
 aerotech_test = Aerotech(stage_config['substrate']['GLASS'], stage_config['mode']['incremental'])
 
 def set_pressure(pressure):
+    # Calculate voltage required to generate expected pressure
     voltage = pressure_config['params']['gain'] * pressure + pressure_config['params']['bias']
 
     if voltage < 0.1:
@@ -54,9 +55,7 @@ def set_pressure(pressure):
     else:
         aerotech_test.set_pressure(voltage)
 
-aerotech_test.set_pressure_regulator(args.enable)
 set_pressure(args.pressure)
-aerotech_test.set_pressure_solenoid(args.enable)
 
 
 

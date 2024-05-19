@@ -11,7 +11,6 @@ print(root_path)
 sys.path.insert(0, root_path)
 
 from system.printer import Printer
-from vision.camera import Camera
 from vision.line_width_estimator import LineWidthEstimator
 from utilities.csv_writer import CSVWriter
 
@@ -51,9 +50,7 @@ speed = printer.base_speed
 
 
 # Activate pressure (regulator + solenoid)
-printer.staging.set_pressure_regulator(1)
 printer.set_pressure(args.pressure)
-printer.staging.set_pressure_solenoid(1)
 
 # Initialize csv writer class with fields
 fieldnames = ['srno', 'ref_line_width', 'updated_line_width', 'width_error', 'stage_speed'] 
@@ -78,9 +75,7 @@ for location in update_print_location:
     flag = True
 
     # Print single line
-    printer.linear_b(0.1, 5)
     printer.linear(1, displacement, speed)
-    printer.linear_b(-0.1, 5)
 
     # Update camera offset and move to camera
     printer.camera_offset[1] = displacement + printer.base_camera_offset[1]
@@ -89,7 +84,7 @@ for location in update_print_location:
 
     # Get line width from vision system
     updated_line_width = printer.linear_estimator(1, -displacement, 50, cnt+1)
-    
+
     # Update next print location
     printer.print_location = update_print_location[cnt+1]
     
@@ -113,8 +108,6 @@ csv_writer.close()
 
 # Turn of pressure
 printer.set_pressure(0)
-printer.staging.set_pressure_regulator(0)
-printer.staging.set_pressure_solenoid(0)
 
 
     

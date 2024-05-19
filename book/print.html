@@ -334,7 +334,7 @@ pip install argparse
 <pre><code>ipconfig
 </code></pre>
 <p><img src="stages/../assets/ip_fetch.png" alt="" /></p>
-<p>From the output use Ethernet adapter's IPv4 Address.</p>
+<p>From the output use Ethernet adapter's IPv4 Address. Incase you are using WiFi adapter, use that IPv4 instead.</p>
 <h3 id="2-get-port-for-ascii-server"><a class="header" href="#2-get-port-for-ascii-server">2. Get Port for ASCII server:</a></h3>
 <p>Open A3200 Configuration Manager and in the left pane go to following parameter:</p>
 <p><strong>config_file -&gt; System -&gt; Communication -&gt; ASCII -&gt; CommandPort</strong></p>
@@ -356,7 +356,7 @@ pip install argparse
 <p>Verification to this could be done using A3200 CNC Operator.</p>
 <p><img src="stages/../assets/stage_test_val.png" alt="" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="pressure"><a class="header" href="#pressure">Pressure</a></h1>
-<p align="justify">The model to convert pressure in PSI to dedicated voltage will be implemented in the <b>printer.py</b> file. That voltage would then be passed to setPressure method in Aerotech Class declared in <b>stage_control.py</b>.</p>
+<p align="justify">The model to convert pressure in PSI to dedicated voltage will be implemented in the <b>printer.py</b> file. That voltage would then be passed to <i>setPressure</i> method in Aerotech Class declared in <b>stage_control.py</b>.</p>
 <p>Definition of the method is as follow:</p>
 <p><img src="stages/./../assets/pressure_method.png" alt="" /></p>
 <p align="justify">Two considerations to keep in mind, the pressure passed as argument to set_pressure method is corresponding voltages (not PSI) and it can be seen that the pressure circuit it attached to X stage controller.</p>
@@ -375,9 +375,9 @@ pressure = (voltage - bias) / gain     # V -&gt; PSI
 </code></pre>
 <h3 id="test-pressure"><a class="header" href="#test-pressure">Test Pressure</a></h3>
 <p align="justify">In order to test the pressure, we can run <b>tests -> stages -> pressure_test.py</b> using following command from root directory: (Pressure is passed as an argument in PSI along with regulator and solenoid enabler)</p>
-<pre><code>python tests/stages/pressure_test.py --pressure 12 --enable 1 
+<pre><code>python tests/stages/pressure_test.py --pressure 12 
 
-python tests/stages/pressure_test.py --enable 0
+python tests/stages/pressure_test.py --pressure 0
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="controller-overview"><a class="header" href="#controller-overview">Controller Overview</a></h1>
 <p align="justify">A P-type controller is implemented in <b>src -> control -> controller.py</b> based on the reference line width to output stage speed for achieving that line width. The configuration file containing process model parameters resides in <b>config -> controller.yaml</b> which has following structure:</p>
@@ -450,6 +450,9 @@ python tests/stages/pressure_test.py --enable 0
 <p>Printer class could be tested in two ways, one is to test movement without pressure and one with pressure.</p>
 <h3 id="movement-test"><a class="header" href="#movement-test">Movement Test</a></h3>
 <p align="justify">In order to test the movement of the stages, three scripts corresponding to each stage is provided in <b>tests -> move</b> directory.</p>
+<blockquote>
+<p>(Note: Use +/- ve with --displacement flag to change direction of movement)</p>
+</blockquote>
 <p>Move stages in x axis:</p>
 <pre><code>python tests/move/x.py --displacement 10 --speed 1
 </code></pre>
@@ -458,10 +461,6 @@ python tests/stages/pressure_test.py --enable 0
 </code></pre>
 <p>Move stages in z axis:</p>
 <pre><code>python tests/move/z.py --displacement 2 --speed 0.1
-</code></pre>
-<p>Move stages in b axis:</p>
-<pre><code>python tests/move/b.py --displacement 0.1 --speed 5
-python tests/move/b.py --displacement -0.1 --speed 5
 </code></pre>
 <h3 id="print-test"><a class="header" href="#print-test">Print Test</a></h3>
 <p align="justify">In order to test the printing, two scripts are provided one of which prints vertically and other horizontally in <b>tests -> print</b> directory.</p>

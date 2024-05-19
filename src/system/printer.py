@@ -20,7 +20,8 @@ sys.path.insert(0, root_path)
 
 from stages.stage_control import Staging, Aerotech
 from control.controller import Controller
-from vision.camera import Camera
+from vision.camera_controller import CameraController
+from vision.image_grabber import ImageGrabber
 from vision.line_width_estimator import LineWidthEstimator
 
 print(root_path)
@@ -309,9 +310,8 @@ class Printer:
             distance (float)   :   Distance to move by
             speed    (float)   :   Speed to move with
         """
-        #intervals = [(distance/2.5), (distance/15), (distance/15)]
+        intervals = [(distance/2.5), (distance/15), (distance/15)]
         #intervals = [(3/4*self.width*self.px_mm), (11/10*self.width*self.px_mm)]
-        intervals = [4/15 * distance, 4/15 * distance] 
         line_widths = []
 
         dir_name = os.path.join('data', str(cnt))

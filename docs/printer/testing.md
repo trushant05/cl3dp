@@ -5,6 +5,8 @@
 ### Movement Test
 <p align="justify">In order to test the movement of the stages, three scripts corresponding to each stage is provided in <b>tests -> move</b> directory.</p>
 
+> (Note: Use +/- ve with --displacement flag to change direction of movement)
+
 Move stages in x axis:
 
 ```
@@ -21,13 +23,6 @@ Move stages in z axis:
 
 ```
 python tests/move/z.py --displacement 2 --speed 0.1
-```
-
-Move stages in b axis:
-
-```
-python tests/move/b.py --displacement 0.1 --speed 5
-python tests/move/b.py --displacement -0.1 --speed 5
 ```
 
 ### Print Test

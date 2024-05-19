@@ -177,7 +177,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="pressure"><a class="header" href="#pressure">Pressure</a></h1>
-<p align="justify">The model to convert pressure in PSI to dedicated voltage will be implemented in the <b>printer.py</b> file. That voltage would then be passed to setPressure method in Aerotech Class declared in <b>stage_control.py</b>.</p>
+<p align="justify">The model to convert pressure in PSI to dedicated voltage will be implemented in the <b>printer.py</b> file. That voltage would then be passed to <i>setPressure</i> method in Aerotech Class declared in <b>stage_control.py</b>.</p>
 <p>Definition of the method is as follow:</p>
 <p><img src="./../assets/pressure_method.png" alt="" /></p>
 <p align="justify">Two considerations to keep in mind, the pressure passed as argument to set_pressure method is corresponding voltages (not PSI) and it can be seen that the pressure circuit it attached to X stage controller.</p>
@@ -196,9 +196,9 @@ pressure = (voltage - bias) / gain     # V -&gt; PSI
 </code></pre>
 <h3 id="test-pressure"><a class="header" href="#test-pressure">Test Pressure</a></h3>
 <p align="justify">In order to test the pressure, we can run <b>tests -> stages -> pressure_test.py</b> using following command from root directory: (Pressure is passed as an argument in PSI along with regulator and solenoid enabler)</p>
-<pre><code>python tests/stages/pressure_test.py --pressure 12 --enable 1 
+<pre><code>python tests/stages/pressure_test.py --pressure 12 
 
-python tests/stages/pressure_test.py --enable 0
+python tests/stages/pressure_test.py --pressure 0
 </code></pre>
 
                     </main>

@@ -25,23 +25,23 @@ args = parser.parse_args()
 
 print(args)
 
-line_length = args.displacement
+# Fetch displacement direction and magnitude
+displacement = args.displacement
 
+# Fetch speed to move by
 speed = args.speed
 
+# Create instance of Printer() class
 printer = Printer()
 
-printer.staging.set_pressure_regulator(1)
+# Set pressure of the system
 printer.set_pressure(args.pressure)
-printer.staging.set_pressure_solenoid(1)
 
-printer.linear_b(0.1, 5)
+# Move in the given direction
 printer.linear(0, displacement, speed)
-printer.linear_b(-0.1, 5)
 
+# Set pressure to 0
 printer.set_pressure(0)
-#printer.staging.set_pressure_regulator(0)
-#printer.staging.set_pressure_solenoid(0)
 
 
     

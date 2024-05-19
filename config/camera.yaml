@@ -1,8 +1,16 @@
-# Camera Configuration File
-# This YAML file consists configuration for camera.
+##################################################
+# File: camera.yaml                              #
+##################################################
 
-# Camera Configuration
+cameras:
+  measurement_camera:
+  - 0
+  - acA1300-30um
+  nozzle_camera:
+  - 1
+  - acA640-750um
+max_camera: 2
 params:
-    px_mm: 3.44
-    width: 2048
-    height: 1536
+  px_mm: 1.52
+  height: 960
+  width: 640

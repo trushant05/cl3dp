@@ -18,9 +18,9 @@ axes:
     speed_slow: 0.5
 
 camera_offset:
-  - -98.3159
-  - 1.1260
-  - 5.2599
+  - -99.0156
+  - 3.6472
+  - 5.3804
 
 moving_height: 18
 
