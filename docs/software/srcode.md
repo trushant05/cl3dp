@@ -27,4 +27,16 @@ pip install pyyaml
 
 # argparse not found
 pip install argparse
+
+# numpy not found
+pip install numpy
+
+# cv2 not found
+pip install opencv-python
+
+# pypylon not found
+pip install pypylon
+
+# scipy not found
+pip install scipy
 ```
