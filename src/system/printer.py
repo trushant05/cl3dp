@@ -178,14 +178,12 @@ class Printer:
             self.current_pressure = (voltage - pressure_cfg['params']['bias']) / pressure_cfg['params']['gain']
         else:
             self.staging.set_pressure(voltage)
-            self.curretn_pressure = pressure
+            self.current_pressure = pressure
 
 
     def linear_print(self, axis, distance, speed):
         
-        self.set_pressure_regulator(1)
         self.set_pressure(self.pressure)
-        self.set_pressure_solenoid(1)
         if (axis == 0):
             self.staging.goto(x=distance, f=speed)
         elif (axis == 1):
@@ -195,8 +193,7 @@ class Printer:
         else:
             raise Exception("Trying to move via a nonexistent axis")
         self.set_pressure(0)
-        self.set_pressure_regulator(0)
-        self.set_pressure_solenoid(0)
+    
         self.current_location = [self.staging.x, self.staging.y, self.staging.z]
 
 

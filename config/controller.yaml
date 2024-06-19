@@ -5,5 +5,5 @@
 params:
   gain: 201.22
   bias: 22.705
-  C: 1
+  C: .5
   ref_line_width: 280
