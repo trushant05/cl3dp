@@ -316,15 +316,16 @@ class CPrinter:
         for sleep in sleeps:
             self.nozzle_position["x"] = self.nozzle_position["x"] + spacing[0][0]
             self.nozzle_position["y"] = self.nozzle_position["y"] + spacing[0][1]
-            self.move_to_nozzle()
-            #self.move_abs(x=xmove, y=ymove, f=self.speed_fast)
+            #self.move_to_nozzle()
+            self.move_abs(x=self.nozzle_position["x"], y=self.nozzle_position["y"], f=self.speed_fast)
             self.move_abs(z=2, f=self.speed_fast)
             self.move_abs(z=0, f=self.speed_slow)
-            time.sleep(3)
+            self.nozzle_now = True
+            #time.sleep(3)
             self.set_pressure(18)
             time.sleep(sleep)
             self.set_pressure(0)
-            self.move_abs(z=self.safe_height, f=self.speed_fast, bypass=True)
+            #self.move_abs(z=self.safe_height, f=self.speed_fast, bypass=True)
             self.move_to_camera()
 
             if camera_use:
