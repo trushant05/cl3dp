@@ -47,29 +47,22 @@ class CPrinter:
     A revised printer class which provides access to stages, contoller and vision.
 
     Attributes:
-        xaxis                 (int)    :    x-axis identifier
-        yaxis                 (int)    :    y-axis identifier
-        zaxis                 (int)    :    z-axis identifier
-        xspeed                (float)  :    Stage speed in x-axis
-        yspeed                (float)  :    Stage speed in y-axis
-        zspeed                (float)  :    Stage speed in z-axis
-        zspeed_slow           (float)  :    Stage speed in z-axis (slower)
-        current_x             (float)  :    Current location in x-axis
-        current_y             (float)  :    Current location in y-axis
-        pressure              (int)    :    Pressure of the system
-        recipe                (list)   :    Recipe to print
-        starting_locations    (list)   :    Base location where the printing starts
-        controller            (class)  :    Instance of the controller class
-        base_speed            (float)  :    Base speed when the system starts
-        current_pressure      (int)    :    Current pressure of the system
-        current_location      (list)   :    Current location of stages in (x, y, z)
-        base_camera_offset    (list)   :    Camera offset at the start of the experiment
-        camera_offset         (list)   :    Camera offset after each iteration of printing
-        print_location        (list)   :    Location to print at
-        moving_height         (float)  :    Height in z-axis while moving from camera <-> nozzle
-        ref_width             (int)    :    Reference line width for controller
-        estimated_line_width  (float)  :    Estimated line width from vision system
-        staging               (int)    :    Instance of the Aerotech staging class
+        current_location['x']           (int)    :    x-axis current observed location
+        current_location['y']           (int)    :    y-axis current observed location
+        current_location['z']           (int)    :    z-axis current observed location
+        nozzle_position['x']            (int)    :    x-axis running nozzle location during print
+        nozzle_position['y']            (int)    :    y-axis running nozzle location during print
+        nozzle_position['z']            (int)    :    z-axis running nozzle location during print
+        nozzle_now                      (bool)   :    Flag for operating mode (camera or nozzle)
+        camera_params                   (dict)   :    Camera optical parameters
+        camera_offset                   (list)   :    Camera offset after each iteration of printing
+        current_pressure                (float)  :    Current set pressure of the system
+        current_voltage                 (float)  :    Current voltage of the pressure system
+        safe_height                     (float)  :    Set safe height for non-print x-y movement 
+        speed_print                     (float)  :    Reference print speed
+        speed_fast                      (float)  :    Set fast movement speed for transitions
+        speed_slow                      (float)  :    Set slow movement speed for lowering to print height
+        speed_camera                    (float)  :    Set camera movement speed
 
     """
     def __init__(self):
@@ -100,21 +93,24 @@ class CPrinter:
         # Where is the camera relative to the nozzle
         self.camera_offset = system_cfg['camera_offset']
 
+        # Camera operating parameters
+        self.camera_params = camera_cfg['params']
+
         # Current Pressure
         self.current_pressure = 0
 
         # Current Voltage
         self.current_voltage = 0
 
-        # Various Print Values
-        self.safe_height = 18
-        self.speed_print = .27
-        self.speed_fast = 50
+        # Various Print Speed Values
+        self.safe_height = 18.0
+        self.speed_print = 2
+        self.speed_fast = 50.0
         self.speed_slow = 0.5
-        self.speed_camera = 5
+        self.speed_camera = 5.0
 
-        # Camera Stuff
-        self.camera_params = camera_cfg['params']
+        self.sleep_time = 3
+
 
     def set_pressure(self, pressure):
         """
@@ -140,7 +136,17 @@ class CPrinter:
             self.current_pressure = pressure
 
     def move_abs(self, x = None, y = None, z = None, f = .2, bypass = False):   
+        """
+        Move using absolute positioning based on home reference of system
 
+        Parameters:
+            x (float)       :    Location to move to in the x
+            y (float)       :    Location to move to in the y
+            z (float)       :    Location to move to in the z
+            f (float)       :    Speed with which to move
+            bypass (bool)   :    Bypass the nozzle reference update
+        """
+        # Ensure which values are populated update current location
         if x is not None:
             self.current_location["x"] = x
         if y is not None:
@@ -148,17 +154,20 @@ class CPrinter:
         if z is not None: 
             self.current_location["z"] = z
 
+        # Handle switch between nozzle and camera
         if not bypass:
             if self.nozzle_now: 
+                # Update nozzle position
                 self.nozzle_position = self.current_location
             else:
+                # If we are at camera, adjust location by offset
                 if x is not None:
                     x = x + self.camera_offset[0]
                 if y is not None:
                     y = y + self.camera_offset[1]
                 if z is not None: 
                     z = z + self.camera_offset[2]
-
+        # Run movement
         self.staging.goto(x = x, y = y, z = z, f = f)
 
     def move_to_camera(self):
@@ -226,48 +235,86 @@ class CPrinter:
         return image
 
     def dist_ang_calc(self, p1, p2):
+        # Calculate change in x and y
+        dx = p2[0]-p1[0]
+        dy = p2[1]-p1[1]
+        
+        # Calculate magnitude of direction vector
+        dist = math.sqrt(dx**2 + dy**2)
 
-        dist = self.camera_params["px_mm"]*math.sqrt((p2[0]-p1[0])**2+(p2[1]-p1[1])**2)
-        angle = math.atan2((p2[1]-p1[1]),(p2[0]-p1[0]))
+        # Normalize direction vector
+        if dist == 0:
+            raise ValueError("Points point1 and point2 are the same")
 
-        return [dist, angle]
+        angle = math.atan2(dy,dx)
+
+        return [dist, angle, [dx,dy]]
 
     def get_cam_points(self, points):
         spacing = self.camera_params["width"]*1.54/1000
-        res = 1
-        prior = 0
-        for idx in range(1, len(points)):
-            dist, angle = self.dist_ang_calc(points[prior], points[idx])
 
-        if dist > spacing:
-            res = math.floor(dist/spacing)
-            prior += 1
+        res = self.get_print_points(points, step_size_mm=spacing)
 
         return res
 
-    def get_print_points(self, points):
-        spacing = 100*1.54/1000
-        res = 1
-        prior = 0
-        for idx in range(1, len(points)):
-            dist, angle = self.dist_ang_calc(points[prior], points[idx])
+    def point_on_vector(self, p1, p2, d):
+        # calc dist
+        dist, angle, change = self.dist_ang_calc(p1, p2)
+        
+        # Calculate new point coordinates
+        new_x = p1[0] + (d / dist) * change[0]
+        new_y = p1[1] + (d / dist) * change[1]
+    
+        return [new_x, new_y]
 
-        if dist > spacing:
-            res = math.floor(dist/spacing)
+    def get_print_points(self, points, step_size_mm=0.5):
+        """
+        Creates a discretized set of linear vector along given points.
+
+        """
+        instructs = []
+        prior = 0
+
+        for idx in range(1, len(points)):
+            # Get distance stuff
+            dist, angle, change = self.dist_ang_calc(points[prior], points[idx])
+
+            # Create spacing by step size
+            spacing = math.floor(dist/step_size_mm)
+
+            # Create equal distance magnitude
+            magnitude = spacing * step_size_mm
+
+            # Create last point of segment
+            stop_point = self.point_on_vector(points[prior], points[idx], magnitude)
+
+            # Create segment
+            x, y = self.create_vector(points[prior], stop_point, spacing)
+
+            # Append List
+            XY = list(zip(x, y))
+            instructs.extend(XY)
+
+            # Update Prior
             prior += 1
 
-        return res
+        # Add final point
+        final = (points[-1][0], points[-1][1])
+        instructs.append(final)
 
-    def create_vector(self, p1, p2, camera=False):
-        point_div = 1
-        if camera:
-            point_div = self.get_cam_points([p1,p2])
-        else:
-            point_div = self.get_print_points([p1,p2])
+        return instructs
 
-        listx = np.linspace(p1[0], p2[0], point_div, endpoint=False)
-        listy = np.linspace(p1[1], p2[1], point_div, endpoint=False)
+    def create_vector(self, p1, p2, print_steps, end=False):
+        """
+        Creates a discretized vector along 2 points.
 
+        """
+
+        # Create x and y points
+        listx = np.linspace(p1[0], p2[0], print_steps, endpoint=end)
+        listy = np.linspace(p1[1], p2[1], print_steps, endpoint=end)
+
+        # Round to sane values
         listx = np.around(listx, decimals=4)
         listy = np.around(listy, decimals=4)
 
@@ -286,29 +333,30 @@ class CPrinter:
         img_path = os.path.join(data_path, img_str)
         cv2.imwrite(img_path, image)
 
-    def print_and_capture(self, coords, pressure, job, camera_use = True):
+    def print_and_capture(self, coords, pressure, job, camera_use = True, discrete = True):
         self.move_to_nozzle()
         self.set_pressure(pressure)
-        time.sleep(1)
-        for i in range(1, len(coords)):
-            xv,yv = self.create_vector(coords[i-1], coords[i])
-            #self.set_pressure(pressures[0])
-            for idx in range(len(xv)):
-                #print(f"x={xv[idx]},y={yv[idx]}, f={speed_slow}")
-                self.move_abs(x=xv[idx],y=yv[idx], f=self.speed_slow)
+        time.sleep(self.sleep_time)
+        
+        if discrete:
+            print_points = self.get_print_points(coords, step_size_mm=self.speed_print)
+        else:
+            print_points = coords
+
+        for p in print_points:
+            self.move_abs(x=p[0],y=p[1], f=self.speed_print)
         self.set_pressure(0)
 
         self.move_to_camera()
 
         if camera_use:
-            for i in range(1, len(coords)):
-                xv,yv = self.create_vector(coords[i-1], coords[i], camera=True)
-                for idx in range(len(xv)):
-                    self.move_abs(x=xv[idx],y=yv[idx], f=self.speed_fast)
-                    img = self.grab_image_pylon()
-                    self.save_pict(img, "Original", job)
-                    _, binary = cv2.threshold(img,  0.9 * 255, 255, cv2.THRESH_BINARY)
-                    self.save_pict(binary, "Binary", job)
+            camera_points = self.get_cam_points(coords)
+            for p in camera_points:
+                self.move_abs(x=p[0],y=p[1], f=self.speed_fast)
+                img = self.grab_image_pylon()
+                self.save_pict(img, "Original", job)
+                _, binary = cv2.threshold(img,  0.9 * 255, 255, cv2.THRESH_BINARY)
+                self.save_pict(binary, "Binary", job)
 
     def print_dots(self, sleeps, spacing, job="dots", camera_use = True):
         self.move_to_nozzle()
@@ -347,6 +395,15 @@ class CPrinter:
 
     def set_zero(self):
         self.staging.send_message('G92 X0 Y0 Z0\n')
+
+    def update_relative_points(self, points, start):
+        updated_points = []
+        for point in points:
+            updated_point = [point[0] + start[0], point[1] + start[1]]
+            updated_points.append(updated_point)
+        return updated_points
+
+
 
             
     
