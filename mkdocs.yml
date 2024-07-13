@@ -1,0 +1,78 @@
+site_name: Closing the Loop in 3D Printing
+theme:
+    name: material
+    logo: assets/img/logo.png
+    features:
+        - navigation.tabs
+        - navigation.tabs.sticky
+        - navigation.sections
+        - navigation.path
+        - navigation.indexes
+        - toc.integrate
+        - search.suggest
+        - search.highlight
+        - content.tabs.link
+        - content.code.annotation
+        - content.code.copy
+    language: en
+    palette:
+        - scheme: default
+          toggle:
+            icon: material/toggle-switch-off-outline
+            name: Switch to dark mode
+          primary: black
+          accent: purple
+        - scheme: slate
+          toggle:
+            icon: material/toggle-switch
+            name: Switch to light mode
+          primary: black
+          accent: lime
+    font:
+        text: Roboto
+        code: Roboto Mono
+
+
+nav:
+    - Home: index.md
+    - Installation:
+        - Overview: install/index.md
+        - A3200: install/a3200.md
+        - Camera: install/camera.md
+        - Miniconda: install/conda.md
+        - Git Bash: install/git_bash.md
+        - Source Code: install/src_code.md
+    - Stages:
+        - Overview: stages/index.md
+        - Connection: stages/connect.md
+        - Pressure: stages/pressure.md
+    - Controller:
+        - Overview: ctrl/index.md
+    - Printer:
+        - Overview: printer/index.md
+    - Vision:
+        - Overview: vision/index.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+extra_css:
+    - assets/css/extra.css        
+
+extra:
+   social:
+       - icon: fontawesome/brands/github-alt
+         link: https://github.com/trushant05
+       - icon: fontawesome/brands/twitter
+         link: https://twitter.com/_trushant_
+       - icon: fontawesome/brands/linkedin
+         link: https://www.linkedin.com/in/trushant-adeshara
+
+copyright: |
+    &copy; 2024 <a href="https://github.com/trushant05" target="_blank" rel="noopener">Trushant Adeshara</a>
