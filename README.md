@@ -181,7 +181,8 @@ Use this space to list resources you find helpful and would like to give credit 
 [Python-url]: https://www.python.org/
 [Matlab-badge]: https://img.shields.io/badge/MATLAB-white?style=flat&logo=MATLAB
 [Matlab-url]: https://www.mathworks.com/products/matlab.html
-[Opencv-badge] : https://img.shields.io/badge/OpenCV-white
-[Opencv-url] : https://opencv.org/
-[Scikitlearn-badge] : https://img.shields.io/badge/Scikit_learn-white
-[Scikitlearn-url] : https://scikit-learn.org/stable/
+[Opencv-badge]: https://img.shields.io/badge/OpenCV-black?style=flat&logo=opencv
+[Opencv-url]: https://opencv.org/
+[Scikitlearn-badge]: https://img.shields.io/badge/Scikit_learn-black?style=flat&logo=scikit-learn
+[Scikitlearn-url]: https://scikit-learn.org/stable/
+
