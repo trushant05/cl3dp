@@ -1,0 +1,27 @@
+.centered-image {
+    max-width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    width: 800px; /* Desired width */
+}
+
+.centered-image-medium {
+    max-width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    width: 750px; /* Desired width */
+}
+
+.centered-image-small {
+    max-width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    width: 550px; /* Desired width */
+}
+
+.centered-image-large {
+    max-width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    width: 900px; /* Desired width */
+}
+
+.justified-content {
+    text-align: justify;
+}
