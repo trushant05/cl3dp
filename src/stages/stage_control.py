@@ -242,7 +242,7 @@ class Aerotech(Staging):
         if not incremental:
             # Absolute mode
             self.send_message('ABSOLUTE\n')
-            self.send_message('G92 X0 Y0 Z0\n')
+            #self.send_message('G92 X0 Y0 Z0\n')
             print('Aerotech initialized = Absolute mode')
             self.mode = 'Absolute'
 
@@ -446,6 +446,8 @@ class Aerotech(Staging):
         z = pos_array[2]
         self.goto(x, y, z, f)
 
+    def set_zero(self):
+        self.send_message('G92 X0 Y0 Z0\n')
 
     def goto_rapid(self, x = None, y = None, z = None):
         """
