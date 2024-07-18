@@ -104,12 +104,23 @@ class CPrinter:
 
         # Various Print Speed Values
         self.safe_height = 18.0
-        self.speed_print = 2
+        self.speed_print = .35
         self.speed_fast = 50.0
         self.speed_slow = 0.5
         self.speed_camera = 5.0
 
-        self.sleep_time = 3
+        # Tuning Params
+        self.sleep_time = 1
+        self.norm_step_size = 0.5
+
+        # Datapath
+        self.data_path = 'data_temp'
+
+        self.default_pressure = 18
+
+        self.set_smooth_operation()
+
+        self.levelpoints = system_cfg['four_point']
 
 
     def set_pressure(self, pressure):
@@ -223,12 +234,21 @@ class CPrinter:
 
 
     def grab_image_pylon(self):
+        """
+        Method to grab the image at the measurement camera.
+
+        """
+        # Creates a measurement camera
         camera_controller = CameraController("measurement_camera")
         camera_controller.configure_for_software_trigger()
 
+        # Creates the image grabber 
         image_grabber = ImageGrabber(camera_controller)
+
+        # Grab image
         image = image_grabber.grab_image()
 
+        # Close/release it after usage
         camera_controller.stop_grabbing()
         camera_controller.close()
 
@@ -251,6 +271,8 @@ class CPrinter:
         return [dist, angle, [dx,dy]]
 
     def get_cam_points(self, points):
+        # Camera width in pixels times the scale to microns
+        # then microns to millimeters
         spacing = self.camera_params["width"]*1.54/1000
 
         res = self.get_print_points(points, step_size_mm=spacing)
@@ -322,7 +344,7 @@ class CPrinter:
     
     def save_pict(self, image, label, job):
         print("Saving Picture")
-        dir_name = 'data_temp'
+        dir_name = self.data_path
         data_path = os.path.join(root_path, dir_name)
         data_path = os.path.join(data_path, job)
         data_path = os.path.join(data_path, label)
@@ -333,30 +355,51 @@ class CPrinter:
         img_path = os.path.join(data_path, img_str)
         cv2.imwrite(img_path, image)
 
-    def print_and_capture(self, coords, pressure, job, camera_use = True, discrete = True):
-        self.move_to_nozzle()
-        self.set_pressure(pressure)
-        time.sleep(self.sleep_time)
-        
+    def print_and_capture(self, coords, pressures, speeds, job, camera_use = True, discrete = True):
+
         if discrete:
-            print_points = self.get_print_points(coords, step_size_mm=self.speed_print)
+            print_points = self.get_print_points(coords, step_size_mm=self.norm_step_size)
+            pres_list, speed_list = self.speeds_and_pressures_block(pressures, speeds, len(print_points))
+            self.set_pressure(pres_list[0])
+            self.speed_print = speed_list[0]
+
         else:
             print_points = coords
+            self.set_pressure(pressures)
+            self.speed_print = speeds
 
+        self.move_to_nozzle()
+        time.sleep(self.sleep_time)
+
+
+        idx = 0
         for p in print_points:
-            self.move_abs(x=p[0],y=p[1], f=self.speed_print)
+            if discrete:
+                self.set_pressure(pres_list[idx])
+                self.speed_print = speed_list[idx]
+            else:
+                self.set_pressure(pressures)
+                self.speed_print = speeds
+            z = self.bilinear_interpolation(p[0],p[1])
+            self.move_abs(x=p[0],y=p[1], z=z, f=self.speed_print)
+            idx = idx + 1
+            
         self.set_pressure(0)
 
         self.move_to_camera()
 
         if camera_use:
-            camera_points = self.get_cam_points(coords)
-            for p in camera_points:
-                self.move_abs(x=p[0],y=p[1], f=self.speed_fast)
-                img = self.grab_image_pylon()
-                self.save_pict(img, "Original", job)
-                _, binary = cv2.threshold(img,  0.9 * 255, 255, cv2.THRESH_BINARY)
-                self.save_pict(binary, "Binary", job)
+            self.camera_run(coords, job)
+
+
+    def camera_run(self, coords, job):
+        camera_points = self.get_cam_points(coords)
+        for p in camera_points:
+            self.move_abs(x=p[0],y=p[1], f=self.speed_fast)
+            img = self.grab_image_pylon()
+            self.save_pict(img, "Original", job)
+            _, binary = cv2.threshold(img,  0.9 * 255, 255, cv2.THRESH_BINARY)
+            self.save_pict(binary, "Binary", job)
 
     def print_dots(self, sleeps, spacing, job="dots", camera_use = True):
         self.move_to_nozzle()
@@ -402,10 +445,65 @@ class CPrinter:
             updated_point = [point[0] + start[0], point[1] + start[1]]
             updated_points.append(updated_point)
         return updated_points
+    
+    def set_smooth_operation(self):
+        self.staging.send_message("WAIT MODE AUTO\n")
+        self.staging.send_message("VELOCITY ON\n")
+
+    def speeds_and_pressures_block(self, pressures, speeds, map_length):
+        p_split = math.floor(map_length/len(pressures))
+        s_split = math.floor(map_length/len(speeds))
 
 
+        res_pressures = []
+        for i in range(len(pressures)):
+            temp = [pressures[i]] * p_split
+            res_pressures.extend(temp)
 
-            
+        pad = map_length - len(res_pressures)
+        if pad > 0:
+            temp = [pressures[-1]]*pad
+            res_pressures.extend(temp)
+
+        res_speeds = []
+        for i in range(len(speeds)):
+            temp = [speeds[i]] * s_split
+            res_speeds.extend(temp)
+
+        pad = map_length - len(res_speeds)
+        if pad > 0:
+            temp = [speeds[-1]]*pad
+            res_speeds.extend(temp)
+
+        return (res_pressures, res_speeds)
+
+
+    def bilinear_interpolation(self, x, y):
+        x1, y1, z1 = self.levelpoints["point0"]
+        x2, y2, z2 = self.levelpoints["point1"]
+        x3, y3, z3 = self.levelpoints["point2"]
+        x4, y4, z4 = self.levelpoints["point3"]
+        
+        # Check if the points form a valid rectangle in the x-y plane
+        if x1 == x2 or x3 == x4 or y1 == y4 or y2 == y3:
+            raise ValueError("Points do not form a valid rectangle in the x-y plane.")
+        
+        # Bilinear interpolation
+        if x2 != x1:
+            f = (x - x1) / (x2 - x1)
+        else:
+            f = 0.5  # Arbitrary value when x2 == x1
+        
+        if y3 != y1:
+            g = (y - y1) / (y3 - y1)
+        else:
+            g = 0.5  # Arbitrary value when y2 == y1
+        
+        # Calculate z based on the interpolation factors
+        z = (1 - f) * (1 - g) * z1 + f * (1 - g) * z2 + f * g * z3 + (1 - f) * g * z4
+        
+        return z
+                
     
 
 
