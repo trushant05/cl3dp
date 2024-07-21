@@ -140,7 +140,7 @@ class EuclideanWidthEstimator():
             for res in temp_results:
                 writer.writerow(res)
 
-        return temp_results[1:]
+        return temp_results
 
 
 

@@ -91,7 +91,6 @@ class JobLoader:
 
         results = []
         measure_jobs = []
-        ret_list = [[0,0,0,0,180]]
         agg_results = os.path.join(self.ewe.data_path, "agg_results.csv" )
         
         while not self.jobs.empty():
@@ -106,18 +105,15 @@ class JobLoader:
             relative_points = self.cprint.update_relative_points(current_job.points, current_job.start)
 
             # Load Job
-            #self.cprint.load_next_job(current_job.start)
-            temp_formula = self.cprint.create_print_formula(relative_points, current_job.pressures, current_job.speeds, discrete = True)
+            self.cprint.load_next_job(current_job.start)
 
             # Print and Capture images
-            #self.cprint.print_and_capture(temp_formula, current_job.label, camera_use = current_job.camera_use, single_job=False)
+            self.cprint.print_and_capture(relative_points, current_job.pressures, current_job.speeds, current_job.label, camera_use = current_job.camera_use, single_job=False)
 
             if current_job.measure:
                 # Estimate Line Width
+                # results.extend(self.ewe.process_job(current_job.label, job_listing=job_listing))
                 measure_jobs.append([current_job.label, job_listing])
-                ret_list.extend(temp_formula)
-
-        ret_list = ret_list[1:]
 
         while not self.circle_jobs.empty():
 
@@ -130,28 +126,22 @@ class JobLoader:
             current_job.start = [current_job.start[0]+self.relative_start[0],current_job.start[1]+self.relative_start[1]]
 
             # Load Job
-            #self.cprint.load_next_job(current_job.start)
+            self.cprint.load_next_job(current_job.start)
             # Print Circle
-            #self.cprint.print_circle_basic(current_job.center, relative_end, current_job.speeds, current_job.pressures)
+            self.cprint.print_circle_basic(current_job.center, relative_end, current_job.speeds, current_job.pressures)
 
-        #self.cprint.move_to_camera()
+        self.cprint.move_to_camera()
 
         if len(measure_jobs) > 0:
             for mj in measure_jobs:
-                #results.extend(self.ewe.process_job(mj[0], job_listing=mj[1]))
-                results.append(180)
-        results = [180]* len(ret_list)
-        #if len(results) > 0:
-            #with open(agg_results, 'w', newline='', encoding='utf-8') as f:
-                #writer = csv.writer(f)
-                #for res in results:
-                    #writer.writerow(res)
+                results.extend(self.ewe.process_job(mj[0], job_listing=mj[1]))
 
-        idx = 0
-        for i in range(len(ret_list)):
-            ret_list[i]= np.append(ret_list[i], results[i])
+        if len(results) > 0:
+            with open(agg_results, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                for res in results:
+                    writer.writerow(res)
 
-        return ret_list
 
 
 

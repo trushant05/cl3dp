@@ -240,7 +240,8 @@ class CPrinter:
 
             # Move in absolute so safe movement height 
             self.move_abs(z = self.safe_height, f = self.speed_fast, bypass = True)
-        
+            print(f"x={self.nozzle_position['x']},  y={self.nozzle_position['y']}")
+            print(f"z={self.nozzle_position['z']}")
             # Move to nozzle space
             self.move_abs(x = self.nozzle_position["x"], y = self.nozzle_position["y"], f = self.speed_fast, bypass = True)
             self.move_abs(z = 4, f = self.speed_fast, bypass = True)
@@ -377,56 +378,51 @@ class CPrinter:
         img_str = label + "_" + t_str + ".png"
         img_path = os.path.join(data_path, img_str)
         cv2.imwrite(img_path, image)
+    
 
+    def print_and_capture(self, coords, pressures, speeds, job, camera_use = True, discrete = True, single_job = True):
+        
+        # placeholder value
+        temp_p = 0
 
-    def create_print_formula(self, coords, pressures, speeds, discrete = True):
-        # formula = [x,y,speed,pressure]
-                
+        # resultant print_job
+        print_job = []
+
         if discrete:
             print_points = self.get_print_points(coords, step_size_mm=self.norm_step_size)
             pres_list, speed_list = self.speeds_and_pressures_block(pressures, speeds, len(print_points))
+            #self.set_pressure(pres_list[0])
+            temp_p = pres_list[0]
             self.speed_print = speed_list[0]
 
         else:
             print_points = coords
+            #self.set_pressure(pressures)
+            temp_p = pressures
             self.speed_print = speeds
 
-        # resultant print_job
-        print_formula = np.zeros((len(print_points), 4))
+        self.move_to_nozzle()
+        self.set_pressure(temp_p)
+        time.sleep(self.sleep_time)
+
 
         idx = 0
         for p in print_points:
             temp_point = [0,0,0,0]
             if discrete:
-                temp_point[2] = speed_list[idx]
-                temp_point[3] = pres_list[idx]
+                self.set_pressure(pres_list[idx])
+
+                self.speed_print = speed_list[idx]
             else:
-                temp_point[2] = speeds
-                temp_point[3] = pressures
+                self.set_pressure(pressures)
+                self.speed_print = speeds
+            z = self.bilinear_interpolation(p[0],p[1])
             temp_point[0] = p[0]
             temp_point[1] = p[1]
-            print_formula[idx] = temp_point
-            idx = idx + 1
-
-        return print_formula
-    
-
-    def print_and_capture(self, print_formula, job, camera_use = True, single_job = True):
-        # formula = [x,y,speed,pressure]
-
-        # initializae
-        self.move_to_nozzle()
-        self.set_pressure(print_formula[0][3])
-        time.sleep(self.sleep_time)
-
-        #main loop
-        idx = 0
-        for p in print_formula:
-            self.set_pressure(p[3])
-            self.speed_print = p[2]
-            z = self.bilinear_interpolation(p[0],p[1])
+            temp_point[2] = self.speed_print
             self.move_abs(x=p[0],y=p[1], z=z, f=self.speed_print)
             idx = idx + 1
+            
         self.set_pressure(0)
 
         if single_job:
@@ -434,7 +430,7 @@ class CPrinter:
 
         if camera_use:
             self.move_to_camera()
-            self.camera_run(print_formula, job)
+            self.camera_run(coords, job)
 
     def print_circle_basic(self, center, end, speed, pressure):
 
@@ -443,8 +439,9 @@ class CPrinter:
         self.staging.send_message(f"CW X{end[0]} Y{end[1]} I{center[0]} J{center[1]} F{speed}\n")
 
 
-    def camera_run(self, print_formula, job):
-        for p in print_formula:
+    def camera_run(self, coords, job):
+        camera_points = self.get_cam_points(coords)
+        for p in camera_points:
             self.move_abs(x=p[0],y=p[1], f=self.speed_fast)
             img = self.grab_image_pylon()
             self.save_pict(img, "Original", job)
@@ -477,7 +474,6 @@ class CPrinter:
 
 
     def load_next_job(self, start_coords):
-
         self.move_to_safe_height()
 
         if start_coords[0] is not None:
@@ -488,11 +484,9 @@ class CPrinter:
         self.move_to_nozzle()
 
     def set_zero(self):
-
         self.staging.send_message('G92 X0 Y0 Z0\n')
 
     def update_relative_points(self, points, start):
-
         updated_points = []
         for point in points:
             updated_point = [point[0] + start[0], point[1] + start[1]]
@@ -500,7 +494,6 @@ class CPrinter:
         return updated_points
     
     def set_smooth_operation(self):
-
         self.staging.send_message("WAIT MODE AUTO\n")
         self.staging.send_message("VELOCITY ON\n")
 
