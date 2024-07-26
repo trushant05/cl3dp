@@ -4,6 +4,7 @@ import sys
 import numpy as np
 from queue import Queue
 import csv
+import time
 
 
 # Set root path
@@ -26,7 +27,7 @@ class JobLoader:
 
     def __init__(self):
         """
-        Initializes a new instance of Printer class.
+        Initializes a new instance of Job Loader class.
         """
         self.jobs = Queue(maxsize = 50)
 
@@ -44,17 +45,20 @@ class JobLoader:
         self.circle_jobs = Queue(maxsize = 50)
 
 
-    def load_job(self, start, points, pressures, speeds, label, camera_use = True, measure = True):
+    def load_job(self, start, points, pressures, speeds, label, camera_use = False, measure = True):
         # Load Job
         temp_job = Job(start, points, pressures, speeds, label, camera_use, measure=measure)
         self.jobs.put(temp_job)
     
+    def import_job(self, job):
+        self.jobs.put(job)
+
     def load_circle_job(self, start, center, end, pressures, speeds):
         # Load Job
         temp_job = CircleJob(start, center, end, pressures, speeds)
         self.circle_jobs.put(temp_job)
 
-    def load_stacked_jobs(self, start, stacks, offset, repeated_obj, pressure_per, speed_per, base_label, xstack = True, camera_use = True, measure = True):
+    def load_stacked_jobs(self, start, stacks, offset, repeated_obj, pressure_per, speed_per, base_label, xstack = True, camera_use = False, measure = True):
         
         max_value = self.get_max_previous_stack(repeated_obj, x_direction = xstack)
         
@@ -92,7 +96,12 @@ class JobLoader:
         results = []
         measure_jobs = []
         ret_list = [[0,0,0,0,180]]
-        agg_results = os.path.join(self.ewe.data_path, "agg_results.csv" )
+
+        t_str = time.strftime("%Y%m%d-%H%M%S")
+
+        agg_str = f"agg_results_{t_str}"
+
+        agg_results = os.path.join(self.ewe.data_path, f"{agg_str}.csv" )
         
         while not self.jobs.empty():
             # Get Next Job
@@ -100,17 +109,17 @@ class JobLoader:
             job_listing = current_job.show_string()
 
             # Update for relative start
-            current_job.start = [current_job.start[0]+self.relative_start[0],current_job.start[1]+self.relative_start[1]]
+            temp_start = [current_job.start[0]+self.relative_start[0],current_job.start[1]+self.relative_start[1]]
 
             # Set Shape relative to start location
-            relative_points = self.cprint.update_relative_points(current_job.points, current_job.start)
+            relative_points = self.cprint.update_relative_points(current_job.points, temp_start)
 
             # Load Job
-            #self.cprint.load_next_job(current_job.start)
+            self.cprint.load_next_job(temp_start)
             temp_formula = self.cprint.create_print_formula(relative_points, current_job.pressures, current_job.speeds, discrete = True)
 
             # Print and Capture images
-            #self.cprint.print_and_capture(temp_formula, current_job.label, camera_use = current_job.camera_use, single_job=False)
+            self.cprint.print_and_capture(temp_formula, current_job.label, camera_use = current_job.camera_use, single_job=False)
 
             if current_job.measure:
                 # Estimate Line Width
@@ -127,29 +136,27 @@ class JobLoader:
             # Update for relative end
             relative_end = [current_job.end[0]+self.relative_start[0],current_job.end[1]+self.relative_start[1]]
             # Update for relative start
-            current_job.start = [current_job.start[0]+self.relative_start[0],current_job.start[1]+self.relative_start[1]]
+            temp_start = [current_job.start[0]+self.relative_start[0],current_job.start[1]+self.relative_start[1]]
 
             # Load Job
-            #self.cprint.load_next_job(current_job.start)
+            self.cprint.load_next_job(temp_start)
             # Print Circle
-            #self.cprint.print_circle_basic(current_job.center, relative_end, current_job.speeds, current_job.pressures)
+            self.cprint.print_circle_basic(current_job.center, relative_end, current_job.speeds, current_job.pressures)
 
-        #self.cprint.move_to_camera()
+        self.cprint.move_to_camera()
 
         if len(measure_jobs) > 0:
             for mj in measure_jobs:
-                #results.extend(self.ewe.process_job(mj[0], job_listing=mj[1]))
-                results.append(180)
-        results = [180]* len(ret_list)
-        #if len(results) > 0:
-            #with open(agg_results, 'w', newline='', encoding='utf-8') as f:
-                #writer = csv.writer(f)
-                #for res in results:
-                    #writer.writerow(res)
+                results.extend(self.ewe.process_job(mj[0], job_listing=mj[1]))
 
-        idx = 0
         for i in range(len(ret_list)):
             ret_list[i]= np.append(ret_list[i], results[i])
+
+        if len(results) > 0:
+            with open(agg_results, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                for res in ret_list:
+                    writer.writerow(res)
 
         return ret_list
 

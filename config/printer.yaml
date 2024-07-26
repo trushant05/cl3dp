@@ -18,9 +18,9 @@ axes:
     speed_slow: 0.5
 
 camera_offset:
-  - -101.6959
-  - 6.5597
-  - -2.4962
+  - -98.7130
+  - 4.7279
+  - -2.0196
 
 four_point:
   point0:
@@ -30,15 +30,15 @@ four_point:
   point1:
     - -20
     - 0
-    - 0
+    - -0.0624
   point2:
     - -20
     - 65
-    - 0.0809
+    - 0.0564
   point3:
     - 0
     - 65
-    - 0.1019
+    - -0.0106
 
 moving_height: 18
 

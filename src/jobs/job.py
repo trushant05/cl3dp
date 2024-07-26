@@ -3,7 +3,7 @@ class Job:
     A class for cprinter jobs.
     """
 
-    def __init__(self, start, points, pressures, speeds, label, camera_use = True, measure=True):
+    def __init__(self, start, points, pressures, speeds, label, camera_use = True, measure=True, controlled = False):
         """
         Initializes a new instance of Job class.
         """
@@ -16,6 +16,7 @@ class Job:
         self.camera_use = camera_use
         self.label = label
         self.measure = measure
+        self.controlled = controlled
 
     def show_string(self):
         res = f"Start:{self.start}\n"
@@ -25,4 +26,5 @@ class Job:
         res += f"Camera Usage:{self.camera_use}\n"
         res += f"Label:{self.label}\n"
         res += f"Measure After:{self.measure}\n"
+        res += f"Controlled Iterative:{self.controlled}\n"
         return res

@@ -111,7 +111,7 @@ class CPrinter:
         self.speed_camera = 5.0
 
         # Tuning Params
-        self.sleep_time = 1.5
+        self.sleep_time = 1.1
         self.norm_step_size = 0.5
 
         # Datapath
@@ -194,8 +194,9 @@ class CPrinter:
             # Ensure pressure is off
             self.set_pressure(0)
 
-            # Copy Nozzle Location
-            self.nozzle_position = self.current_location.copy() 
+            if self.nozzle_now:
+                # Copy Nozzle Location
+                self.nozzle_position = self.current_location.copy() 
 
             # Move in absolute so safe movement height 
             self.move_abs(z = self.safe_height, f = self.speed_fast, bypass = True)
@@ -214,11 +215,13 @@ class CPrinter:
 
     def move_to_safe_height(self):
 
+        
         # Ensure pressure is off
         self.set_pressure(0)
 
-        # Copy Nozzle Location
-        self.nozzle_position = self.current_location.copy() 
+        if self.nozzle_now:
+            # Copy Nozzle Location
+            self.nozzle_position = self.current_location.copy() 
 
         # Move in absolute so safe movement height 
         self.move_abs(z = self.safe_height, f = self.speed_fast, bypass = True)
@@ -365,7 +368,7 @@ class CPrinter:
 
         return [listx, listy]
     
-    def save_pict(self, image, label, job):
+    def save_pict(self, image, label, job, coord_label = ''):
         print("Saving Picture")
         dir_name = self.data_path
         data_path = os.path.join(root_path, dir_name)
@@ -374,7 +377,7 @@ class CPrinter:
         os.makedirs(data_path, exist_ok=True)
 
         t_str = time.strftime("%Y%m%d-%H%M%S")
-        img_str = label + "_" + t_str + ".png"
+        img_str = label + "_" + coord_label + "_" + t_str + ".png"
         img_path = os.path.join(data_path, img_str)
         cv2.imwrite(img_path, image)
 
@@ -434,7 +437,7 @@ class CPrinter:
 
         if camera_use:
             self.move_to_camera()
-            self.camera_run(print_formula, job)
+            self.camera_run(print_formula, job, coord = True)
 
     def print_circle_basic(self, center, end, speed, pressure):
 
@@ -443,13 +446,16 @@ class CPrinter:
         self.staging.send_message(f"CW X{end[0]} Y{end[1]} I{center[0]} J{center[1]} F{speed}\n")
 
 
-    def camera_run(self, print_formula, job):
+    def camera_run(self, print_formula, job, coord = False):
         for p in print_formula:
             self.move_abs(x=p[0],y=p[1], f=self.speed_fast)
             img = self.grab_image_pylon()
-            self.save_pict(img, "Original", job)
+            coord_label = ''
+            if coord:
+                coord_label = f"X{p[0]}_Y{p[1]}"
+            self.save_pict(img, f"Original", job, coord_label=coord_label)
             _, binary = cv2.threshold(img,  0.9 * 255, 255, cv2.THRESH_BINARY)
-            self.save_pict(binary, "Binary", job)
+            self.save_pict(binary, f"Binary", job, coord_label=coord_label)
 
     def print_dots(self, sleeps, spacing, job="dots", camera_use = True):
         self.move_to_nozzle()

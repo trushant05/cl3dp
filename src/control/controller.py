@@ -42,6 +42,7 @@ class Controller:
 
         """
         self.process_gain = config['params']['gain']
+        self.process_fast_gain = config['params']['fast_gain']
         self.process_bias = config['params']['bias']
         self.C = config['params']['C']
 
@@ -87,6 +88,17 @@ class Controller:
 
         """
         speed = (self.process_gain / (ref_line_width + self.process_bias)) ** 2
+        return speed
+    
+    def base_process_fast(self, ref_line_width):
+        """
+        Method to evaluate initial stage speed based on ref_line_width.
+
+        Parameters:
+            ref_line_width (float)   :   Reference line width (expected)
+
+        """
+        speed = (self.process_fast_gain / (ref_line_width + self.process_bias)) ** 2
         return speed
 
 

@@ -7,3 +7,4 @@ params:
   bias: 22.705
   C: .5
   ref_line_width: 280
+  fast_gain: 253.26
