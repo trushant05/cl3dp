@@ -14,48 +14,68 @@ from system.cprinter import CPrinter
 import cv2
 
 coords_line1 = [
-    [0, 0],
-    [-10, 0]
+    [-10, 0],
+    [3, 0]
 ]
 
 coords_line2 = [
-    [0, 5],
-    [-10, 5]
+    [-10, 10],
+    [3, 10]
 ]
 
 coords_line3 = [
-    [0, 10],
-    [-10, 10]
+    [-10, 15],
+    [3, 15]
+]
+
+coords_line4 = [
+    [-10, 20],
+    [3, 20]
 ]
 
 dot_start = [
-    [0, 15]
+    [-3, 25]
 ]
 
 dot_spacing = [
     [0, 5]
 ]
 
-sleeps = np.array(list(range(1, 7)))
+
+
+sleeps = np.array(list(range(7, 11)))
 
 cprint = CPrinter()
 
 cprint.nozzle_now = False
 
+# Load Next Job
+cprint.load_next_job(coords_line1[0])
+
 # Calibration and Clearing
-cprint.print_and_capture(coords_line1, 20, "clearing", camera_use = False)
+line1_form = cprint.create_print_formula(coords_line1, [18], [.35], discrete = True)
+#cprint.print_and_capture(line1_form, "clearing", camera_use = True)
 
 # Load Next Job
 cprint.load_next_job(coords_line2[0])
 
-# Calibration and Clearing
-cprint.print_and_capture(coords_line2, 16, "16PSI")
+# Line 1
+line1_form = cprint.create_print_formula(coords_line2, [30], [.5], discrete = True)
+#cprint.print_and_capture(line1_form, "30PSI_0D5", camera_use = True)
 
 # Load Next Job
 cprint.load_next_job(coords_line3[0])
 
-# Calibration and Clearing
-cprint.print_and_capture(coords_line3, 18, "18PSI")
+# Line 2
+line1_form = cprint.create_print_formula(coords_line3, [30], [.75], discrete = True)
+#cprint.print_and_capture(line1_form, "30PSI_0D75", camera_use = True)
+
+# Load Next Job
+cprint.load_next_job(coords_line4[0])
+
+# Line 2
+line1_form = cprint.create_print_formula(coords_line4, [40], [.50], discrete = True)
+#cprint.print_and_capture(line1_form, "40PSI_0D50", camera_use = True)
 
 # Load Next Job
 cprint.load_next_job(dot_start[0])

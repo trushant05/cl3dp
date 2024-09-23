@@ -387,6 +387,7 @@ class CPrinter:
                 
         if discrete:
             print_points = self.get_print_points(coords, step_size_mm=self.norm_step_size)
+            print(len(print_points))
             pres_list, speed_list = self.speeds_and_pressures_block(pressures, speeds, len(print_points))
             self.speed_print = speed_list[0]
 
@@ -461,12 +462,12 @@ class CPrinter:
         self.move_to_nozzle()
         self.move_abs(z=self.safe_height, f=self.speed_fast)
         for sleep in sleeps:
+            self.move_to_nozzle()
+            self.move_abs(z=4, f=self.speed_fast)
             self.nozzle_position["x"] = self.nozzle_position["x"] + spacing[0][0]
             self.nozzle_position["y"] = self.nozzle_position["y"] + spacing[0][1]
-            #self.move_to_nozzle()
             self.move_abs(x=self.nozzle_position["x"], y=self.nozzle_position["y"], f=self.speed_fast)
-            self.move_abs(z=2, f=self.speed_fast)
-            self.move_abs(z=0, f=self.speed_slow)
+            self.move_abs(z=.1, f=self.speed_slow)
             self.nozzle_now = True
             #time.sleep(3)
             self.set_pressure(18)

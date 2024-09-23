@@ -6,6 +6,7 @@ import os
 import matplotlib.pyplot as plt
 #from matplotlib_scalebar.scalebar import ScaleBar
 import csv
+import cv2
 
 # Set root path
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -18,10 +19,10 @@ class EuclideanWidthEstimator():
         self.data_folder = "data_temp"
         self.data_path = os.path.join(root_path, self.data_folder )
 
-    def find_binary_png_files(self, job_path):
-        pattern = job_path + '.\Binary\Binary*.png'
-        binary_png_files = glob.glob(pattern)
-        return binary_png_files
+    def find_original_png_files(self, job_path):
+        pattern = job_path + '.\Original\Original*.png'
+        original_png_files = glob.glob(pattern)
+        return original_png_files
 
     def get_folders(self, directory):
         folders = [folder for folder in os.listdir(directory) if os.path.isdir(os.path.join(directory, folder))]
@@ -30,8 +31,11 @@ class EuclideanWidthEstimator():
     def threshold_and_transform(self, image_path, save_path, save_img = False):
         # Get Image
         image = dip.ImageRead(image_path)
+
         # Threshold to black and white›
         imgt = image > 128
+
+        print(imgt)
         # Generate Distance Transformation
         dt = dip.EuclideanDistanceTransform(imgt)
 
@@ -45,6 +49,23 @@ class EuclideanWidthEstimator():
             plt.savefig(temp_name)
 
         return dt
+    
+    def binary_and_remove_specks(self, image_path, save_path):
+        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        # Threshold the image to create a binary image (if needed)
+        _, binary = cv2.threshold(image, 128, 255, cv2.THRESH_BINARY)
+
+        # Define a kernel for morphological operations
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (15, 15))
+
+        # Use morphological closing to remove small black spots
+        closed = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
+
+        # Use morphological opening to further clean up the image
+        cleaned = cv2.morphologyEx(closed, cv2.MORPH_OPEN, kernel)
+
+        cv2.imwrite(save_path, cleaned)
+
 
     def bounded_threshold(self, dist_transform, save_path, percent=.15, save_img = False):
         # Change to np array
@@ -101,7 +122,11 @@ class EuclideanWidthEstimator():
         job_directory = os.path.join(self.data_path, job)
 
         # Get pictures in job directory
-        pictures = self.find_binary_png_files(job_directory)
+        pictures = self.find_original_png_files(job_directory)
+
+        # Make Binary Directory
+        binary_directory = os.path.join(job_directory, "Binary")
+        os.makedirs(binary_directory, exist_ok=True)
 
         # Make results directory
         results_directory = os.path.join(job_directory, "Results")
@@ -114,11 +139,17 @@ class EuclideanWidthEstimator():
 
         for pict in pictures:
             # split off name
-            temp = pict.split("Binary_")
+            temp = pict.split("Original_")
+
+            binary_path = os.path.join(binary_directory, temp[1][:-4])
+            binary_path = binary_path + "_Binary.png"
+
+            self.binary_and_remove_specks(pict, binary_path)
+
             save_path = os.path.join(results_directory, temp[1][:-4])
 
             # create distance transform
-            dt = self.threshold_and_transform(pict, save_path, save_img = save_img)
+            dt = self.threshold_and_transform(binary_path, save_path, save_img = save_img)
 
             # create distance transform
             b_th = self.bounded_threshold(dt, save_path, percent=.2, save_img = save_img)

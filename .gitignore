@@ -56,3 +56,5 @@ CATKIN_IGNORE
 *.csv
 files.txt
 errorperpoint.png
+/src/backup
+src/edited.zip
