@@ -5,8 +5,8 @@ import time
 
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 config_path = os.path.join(root_path, '..\config\camera.yaml')
-print(root_path)
-print(config_path)
+#print(root_path)
+#print(config_path)
 
 sys.path.insert(0, root_path)
 from vision.camera_controller import CameraController

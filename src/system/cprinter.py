@@ -369,7 +369,7 @@ class CPrinter:
         return [listx, listy]
     
     def save_pict(self, image, label, job, coord_label = ''):
-        print("Saving Picture")
+        #print("Saving Picture")
         dir_name = self.data_path
         data_path = os.path.join(root_path, dir_name)
         data_path = os.path.join(data_path, job)
@@ -387,7 +387,7 @@ class CPrinter:
                 
         if discrete:
             print_points = self.get_print_points(coords, step_size_mm=self.norm_step_size)
-            print(len(print_points))
+            #print(len(print_points))
             pres_list, speed_list = self.speeds_and_pressures_block(pressures, speeds, len(print_points))
             self.speed_print = speed_list[0]
 
@@ -455,8 +455,8 @@ class CPrinter:
             if coord:
                 coord_label = f"X{p[0]}_Y{p[1]}"
             self.save_pict(img, f"Original", job, coord_label=coord_label)
-            _, binary = cv2.threshold(img,  0.9 * 255, 255, cv2.THRESH_BINARY)
-            self.save_pict(binary, f"Binary", job, coord_label=coord_label)
+            #_, binary = cv2.threshold(img,  0.9 * 255, 255, cv2.THRESH_BINARY)
+            #self.save_pict(binary, f"Binary", job, coord_label=coord_label)
 
     def print_dots(self, sleeps, spacing, job="dots", camera_use = True):
         self.move_to_nozzle()

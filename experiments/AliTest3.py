@@ -24,7 +24,6 @@ calibration_line = [[0,0], [-10,0]]
 
 cprint.print_and_capture(calibration_line, 20, .35, "Calibration", discrete=False, camera_use = False)
 
-
 # EXPERIMENT 3
 # Job point
 start_points = [

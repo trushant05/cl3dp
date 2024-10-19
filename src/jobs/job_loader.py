@@ -108,6 +108,8 @@ class JobLoader:
             current_job=self.jobs.get()
             job_listing = current_job.show_string()
 
+            print(job_listing)
+
             # Update for relative start
             temp_start = [current_job.start[0]+self.relative_start[0],current_job.start[1]+self.relative_start[1]]
 

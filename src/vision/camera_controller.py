@@ -5,8 +5,8 @@ import sys
 
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..\..'))
 config_path = root_path + '\config\camera.yaml'
-print(root_path)
-print(config_path)
+#print(root_path)
+#print(config_path)
 
 sys.path.insert(0, root_path)
 
@@ -43,7 +43,7 @@ class CameraController:
         pfs_path = root_path + "\config\pfs" 
         pfs_filename = self.camera_name + ".pfs"
         self.camera_param_filepath = os.path.join(root_path, "\config\pfs", pfs_path, pfs_filename)
-        print(self.camera_param_filepath)
+        #print(self.camera_param_filepath)
 
         # Instantiate camera
         self.tlFactory = pylon.TlFactory.GetInstance()

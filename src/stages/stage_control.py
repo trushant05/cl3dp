@@ -72,10 +72,10 @@ class Staging(object):
             z (float)  :  Update movement in z stage
             f (float)  :  Speed of movement
         """
-        print("GOTO inside Staging class")
+        #print("GOTO inside Staging class")
         if f is NOTHING:
             f=self.default_feedrate
-        print('Moving by', x, ' ', y, ' ', z, ' at speed ', f, ' mm/s.\n')
+        #print('Moving by', x, ' ', y, ' ', z, ' at speed ', f, ' mm/s.\n')
         if x != None:
             self.x += x
         if y != None:
@@ -86,7 +86,7 @@ class Staging(object):
     def goto_b(self, b = None, f = NOTHING):
         if f is NOTHING:
             f=self.default_feedrate
-        print('Moving by', b, ' at speed ', f, ' mm/s.\n')
+        #print('Moving by', b, ' at speed ', f, ' mm/s.\n')
         if b != None:
             self.b += b
 
@@ -115,7 +115,7 @@ class Staging(object):
             y (float)  :  Update movement in y stage
             z (float)  :  Update movement in z stage
         """
-        print('Moving rapidly by', x, ' ', y, ' ', z)
+        #print('Moving rapidly by', x, ' ', y, ' ', z)
         if x != None:
             self.x += x
         if y != None:
@@ -132,7 +132,7 @@ class Staging(object):
         Parameters:
             msg (str)   :    Control commands
         """
-        print(msg)
+        #print(msg)
 
 
     def set_pos(self, x = None , y = None , z = None ): #for testing only
@@ -316,7 +316,7 @@ class Aerotech(Staging):
             f (float)  :  Speed of movement
 
         """
-        print("GOTO inside Aerotech class")
+        #print("GOTO inside Aerotech class")
         if f is NOTHING:
             f = self.default_feedrate
         if x != None or y != None or z != None:
@@ -338,7 +338,7 @@ class Aerotech(Staging):
         else:
             raise ValueError('staging.goto() was called with all None arguments')
         msg += '\n'
-        print(msg)
+        #print(msg)
         self.send_message(msg)
 
     def goto_b(self, b = None, f = NOTHING):
@@ -359,7 +359,7 @@ class Aerotech(Staging):
         else:
             raise ValueError('staging.goto_b() was called with all None arguments')
         msg += '\n'
-        print(msg)
+        #print(msg)
         self.send_message(msg)
 
 
@@ -382,7 +382,7 @@ class Aerotech(Staging):
         else:
             raise ValueError('staging.set_pressure() was called with all None arguments')
         msg += '\n'
-        print(msg)
+        #print(msg)
         self.send_message(msg)
 
 
@@ -405,7 +405,7 @@ class Aerotech(Staging):
         else:
             raise ValueError('staging.set_pressure_regulator() was called with all None arguments')
         msg += '\n'
-        print(msg)
+        #print(msg)
         self.send_message(msg)
 
 
@@ -428,7 +428,7 @@ class Aerotech(Staging):
         else:
             raise ValueError('staging.set_pressure_solenoid() was called with all None arguments')
         msg += '\n'
-        print(msg)
+        #print(msg)
         self.send_message(msg)
 
 
@@ -470,7 +470,7 @@ class Aerotech(Staging):
         else:
             raise ValueError('staging.goto_rapid() was called with all None arguments')
         msg += '\n'
-        print(msg)
+        #print(msg)
         self.send_message(msg)
 
 
@@ -482,13 +482,13 @@ class Aerotech(Staging):
             msg (str)    :    Command to be executed by ASCII server.
 
         """
-        print(msg)
+        #print(msg)
         self.socket.send(msg.encode())
         number_of_msg = msg.count('\n')
         for msg_counter in range(number_of_msg):
             self.recv_msg = ''
             recv_str = self.socket.recv(1024).decode()
-            print(recv_str)
+            #print(recv_str)
             self.recv_msg += recv_str # builds a received message for the last command only
         if (len(self.recv_msg)>1):
             return str(self.recv_msg[1:-1])
