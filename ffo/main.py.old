@@ -1,0 +1,88 @@
+import numpy as np
+
+from src.pkg.initial_values import *
+
+from src.pkg.utils import speed_ctrl_func
+
+from src.pkg.NLP import NLP_extrusion
+
+from src.pkg.pattern_params import *
+
+from src.pkg.pattern import *
+
+from src.pkg.smoothing_speed import Speed_changes_index, speed_smooth_func, plot_smooth_func
+
+
+
+# the first optimizer calling for cosidering pattern complexities
+P_pr_opt = np.zeros((Imax,1))
+
+S_pr_opt = np.zeros((Imax,1))
+
+W_pr_opt = np.zeros((Imax,1))
+
+qq = 15
+
+ss = 1
+
+rr = 0.001
+
+extrusion_obj = NLP_extrusion(params, wpr_ref[0], spr_ref[0], speed_ctrl[0], qq, ss, rr)
+
+for i in range(Imax):
+
+    P_pr_opt[i], S_pr_opt[i], W_pr_opt[i] = extrusion_obj.optimize(params, wpr_ref[i], spr_ref[i], speed_ctrl[i], qq, ss, rr)
+
+    # print('#########################################################################################')
+    # print(f'pressure expected {p_pr_expected[i]}, speed_ref {spr_ref[i]} , W_ref {wpr_ref[i]}')
+    # print(f'pressure final {P_pr_opt[i]}, speed {S_pr_opt[i]} , W final {W_pr_opt[i]}')
+    # print('#########################################################################################')
+
+extrusion_obj.plotoptimal(wpr_ref, spr_ref, P_pr_opt, S_pr_opt, W_pr_opt, speed_ctrl, angles, 'non_smooth')
+
+
+
+
+# Smoothing the speed after 1st optimization
+
+angles_id, n_points_limits = Speed_changes_index(S_pr_opt)
+
+
+S_pr_opt_smt = speed_smooth_func(S_pr_opt, dx  ,angles_id, n_points_limits ,s_max , s_min, 4)
+
+plot_smooth_func(Imax, dx, S_pr_opt, S_pr_opt_smt )
+
+
+
+##  the second time optimizer that has been called:
+
+P_pr_opt_smoothed = np.zeros((Imax,1))
+
+S_pr_opt_smoothed = np.zeros((Imax,1))
+
+W_pr_opt_smoothed = np.zeros((Imax,1))
+
+spr_ref_new = S_pr_opt_smt
+
+qq = 15
+
+ss = 1
+
+rr = 0 # here to calculate everything based on smoothed velocity, we don't need any more the effects of complex pattern because once it is considered in velocity
+
+extrusion_obj_smt = NLP_extrusion(params, wpr_ref[0], spr_ref_new[0], speed_ctrl[0], qq, ss, rr)
+
+for i in range(Imax):
+
+    P_pr_opt_smoothed [i], S_pr_opt_smoothed [i], W_pr_opt_smoothed [i] = extrusion_obj_smt.optimize(params, wpr_ref[i], spr_ref_new[i], speed_ctrl[i], qq, ss, rr)
+
+    # print('#########################################################################################')
+    # print(f'pressure expected {p_pr_expected[i]}, speed_ref {spr_ref[i]} , W_ref {wpr_ref[i]}')
+    # print(f'pressure final {P_pr_opt[i]}, speed {S_pr_opt[i]} , W final {W_pr_opt[i]}')
+    # print('#########################################################################################')
+
+extrusion_obj_smt.plotoptimal(wpr_ref, spr_ref_new, P_pr_opt_smoothed, S_pr_opt_smoothed, W_pr_opt_smoothed, speed_ctrl, angles, 'smoothed')
+
+
+
+
