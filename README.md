@@ -92,7 +92,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 Clone this GitHub repo and follow this installation guide for details.
 
-_For more details, please refer to the [Documentation](https://example.com)_
+_For more details, please refer to the [Documentation](https://trushant05.github.io/cl3dp/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -102,7 +102,7 @@ _For more details, please refer to the [Documentation](https://example.com)_
 
 The software allows testing stages, controller, printer and vision system independently.
 
-_For more details, please refer to the [Documentation](https://example.com)_
+_For more details, please refer to the [Documentation](https://trushant05.github.io/cl3dp/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -140,7 +140,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Trushant Adeshara - trushant@umich.edu
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/trushant05/cl3dp](https://github.com/trushant05/cl3dp)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
