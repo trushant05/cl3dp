@@ -29,10 +29,10 @@
 
   <p align="center">
     <br />
-    <a href="https://github.com/trushant05/cl3dp"><strong>Explore the docs »</strong></a>
+    <a href="https://trushant05.github.io/cl3dp/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/trushant05/cl3dp">View Demo</a>
+    <a href="https://trushant05.github.io/cl3dp/">View Demo</a>
     ·
     <a href="https://github.com/trushant05/cl3dp/issues">Report Bug</a>
     ·
