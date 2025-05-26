@@ -1,9 +1,15 @@
 site_name: Closing the Loop in 3D Printing
+site_url: https://trushant05.github.io/cl3dp/
+site_author: Trushant Adeshara
+
+repo_name: trushant05/cl3dp 
+repo_url: https://github.com/trushant05/cl3dp
+
 theme:
     name: material
     logo: assets/img/logo.png
     features:
-        - navigation.tabs
+        #- navigation.tabs
         - navigation.tabs.sticky
         - navigation.sections
         - navigation.path
@@ -11,7 +17,7 @@ theme:
         - toc.integrate
         - search.suggest
         - search.highlight
-        - content.tabs.link
+        #- content.tabs.link
         - content.code.annotation
         - content.code.copy
     language: en
@@ -34,23 +40,24 @@ theme:
 
 
 nav:
-    - Home: index.md
-    - Installation:
+    - Getting Started:
+      - Home: index.md
+      - Installation:
         - Overview: install/index.md
         - A3200: install/a3200.md
         - Camera: install/camera.md
         - Miniconda: install/conda.md
         - Git Bash: install/git_bash.md
         - Source Code: install/src_code.md
-    - Stages:
+      - Stages:
         - Overview: stages/index.md
         - Connection: stages/connect.md
         - Pressure: stages/pressure.md
-    - Controller:
+      - Controller:
         - Overview: ctrl/index.md
-    - Printer:
+      - Printer:
         - Overview: printer/index.md
-    - Vision:
+      - Vision:
         - Overview: vision/index.md
 
 markdown_extensions:
