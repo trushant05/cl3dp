@@ -13,8 +13,8 @@
     Note: Unless specified, keep the default settings in the installer.
 
 3. Open Git Bash Setup Tool
-    - Run the downloaded Git Bash installer.
-
+    - Open the directory where Git Bash is download.
+    - Now execute the Git Bash Setup Tool.
 ![Git Bash License](../assets/img/install/bash/git_bash_license.png)
 
 4. Keep Default Component Selection
