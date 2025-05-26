@@ -2,13 +2,11 @@
 
 1. Download [cl3dp Repo](https://github.com/trushant05/cl3dp) from GitHub Either Via Xxtracting zip to Desired Location OR Cloning the Repo
 
-    <img src="/assets/img/install/src_code/srcode_download.png" alt="Source Code Download" class="centered-image-medium">
-
+    ![Source Code Download](../assets/img/install/src_code/srcode_download.png)
 
 2. Open Root Directory of cl3dp in Git Bash
 
-    <img src="/assets/img/install/src_code/srcode_git_bash.png" alt="Root Directory Setup" class="centered-image-medium">
-
+    ![Root Directory Setup](../assets/img/install/src_code/srcode_git_bash.png)
 
 3. Create a New Conda Environment
     - Use the following command to create a new conda environment with Python 3.8:
@@ -17,8 +15,7 @@
     conda create --prefix envs python=3.8 
     ```
 
-    <img src="/assets/img/install/src_code/srcode_conda_env_create.png" alt="Create New Conda Environment" class="centered-image-medium">
-
+    ![Create New Conda Environment](../assets/img/install/src_code/srcode_conda_env_create.png)
 
 4. Activate Conda Environment and Install Dependencies
     - Activate te newly created conda environment with the following command:

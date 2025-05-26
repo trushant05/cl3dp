@@ -7,7 +7,7 @@
          ipconfig 
         ```
 
-    <img src="/assets/img/stages/ip_fetch.png" alt="IP Fetch" class="centered-image-small">
+    ![IP Fetch](../assets/img/stages/ip_fetch.png)
 
 
     From the output use Ethernet adapter's IPv4 Address. Incase you are using WiFi adapter, use that IPv4 instead.
@@ -17,7 +17,7 @@
 
         **config_file -> System -> Communication -> ASCII -> CommandPort**
 
-    <img src="/assets/img/stages/port_fetch.png" alt="Port Fetch" class="centered-image-medium">
+    ![Port Fetch](../assets/img/stages/port_fetch.png)
 
     Note: Keep all other parameters default for now.
 
@@ -31,7 +31,7 @@ which will enable all three (X, Y and Z stage) by using following command: </p>
 python tests/stages/stages_enable.py 
 ```
 
-<img src="/assets/img/stages/stage_test.png" alt="Stage Test" class="centered-image-large">
+![Stage Test](../assets/img/stages/stage_test.png)
 
 The output states following:
 
@@ -43,4 +43,4 @@ The output states following:
 
 You can verify these settings using the A3200 CNC Operator.
 
-<img src="/assets/img/stages/stage_test_val.png" alt="Stage Test Validation" class="centered-image-medium">
+![Stage Test Validation](../assets/img/stages/stage_test_val.png)
