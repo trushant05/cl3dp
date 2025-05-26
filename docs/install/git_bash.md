@@ -14,6 +14,7 @@
 
 3. Open Git Bash Setup Tool
     - Run the downloaded Git Bash installer.
+
 ![Git Bash License](../assets/img/install/bash/git_bash_license.png)
 
 4. Keep Default Component Selection
