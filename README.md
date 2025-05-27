@@ -140,7 +140,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Trushant Adeshara - trushant@umich.edu
 
-Project Link: [https://github.com/trushant05/cl3dp](https://github.com/trushant05/cl3dp)
+Project Link: [CLose Loop in 3D Printing](https://github.com/trushant05/cl3dp)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
